@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grade Curricular SI UECE Mombaça</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: cabeçalho com resumo, grade de 8 períodos (rolagem horizontal) e banco de optativas fixo à direita */
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --ink: #17233a;
+  --muted: #5d6b80;
+  --line: #d5dbe3;
+  --accent: #1f5f8b;
+  --accent-ink: #ffffff;
+
+  --ok: #2f8f5b;
+  --ok-bg: #e2f3e8;
+  --ok-line: #9fd2b3;
+  --avail-bg: #fff4bf;
+  --avail-line: #e7c94a;
+  --lock-bg: #f2e6e8;
+  --lock-ink: #a88f95;
+  --rel-pre: #d9792b;
+  --rel-pos: #6a4fc4;
+
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(23, 35, 58, .08), 0 2px 8px rgba(23, 35, 58, .06);
+  --col-min: 156px;
+  --banco-largura: 320px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161f;
+    --surface: #1a212d;
+    --ink: #e6ebf2;
+    --muted: #9aa6b8;
+    --line: #2c3545;
+    --accent: #5aa7dc;
+    --accent-ink: #0d1520;
+    --ok: #5cc48a;
+    --ok-bg: #173327;
+    --ok-line: #2f6b4b;
+    --avail-bg: #3a3214;
+    --avail-line: #8f7a22;
+    --lock-bg: #221d22;
+    --lock-ink: #6f6168;
+    --rel-pre: #f0994f;
+    --rel-pos: #a28bf0;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161f;
+  --surface: #1a212d;
+  --ink: #e6ebf2;
+  --muted: #9aa6b8;
+  --line: #2c3545;
+  --accent: #5aa7dc;
+  --accent-ink: #0d1520;
+  --ok: #5cc48a;
+  --ok-bg: #173327;
+  --ok-line: #2f6b4b;
+  --avail-bg: #3a3214;
+  --avail-line: #8f7a22;
+  --lock-bg: #221d22;
+  --lock-ink: #6f6168;
+  --rel-pre: #f0994f;
+  --rel-pos: #a28bf0;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.45 var(--font-body);
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Cabeçalho */
+.topo {
+  display: grid;
+  gap: 16px;
+  padding: 20px clamp(16px, 3vw, 32px) 12px;
+}
+.titulo-linha { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+.titulo-linha h1 {
+  font: 700 clamp(22px, 2.6vw, 30px)/1.1 var(--font-display);
+  margin: 0;
+  text-wrap: balance;
+}
+.titulo-linha p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+.acoes-topo { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 7px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+.btn:hover { border-color: var(--accent); }
+.btn-primario { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn-perigo:hover { border-color: #c0392b; color: #c0392b; }
+
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  display: grid;
+  gap: 6px;
+}
+.tile-rotulo { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+.tile-valor { font: 700 22px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.tile-valor small { font: 500 14px var(--font-body); color: var(--muted); }
+.barra { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.barra > span { display: block; height: 100%; background: var(--ok); border-radius: 3px; transition: width .3s; }
+
+.legenda { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--muted); align-items: center; }
+.legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.amostra { width: 14px; height: 14px; border-radius: 4px; border: 1px solid; display: inline-block; }
+.amostra.feita { background: var(--ok-bg); border-color: var(--ok-line); }
+.amostra.disponivel { background: var(--avail-bg); border-color: var(--avail-line); }
+.amostra.bloqueada { background: var(--lock-bg); border-color: var(--line); }
+.amostra.pre { background: transparent; border: 2px solid var(--rel-pre); }
+.amostra.pos { background: transparent; border: 2px solid var(--rel-pos); }
+
+/* Área principal */
+.principal {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--banco-largura);
+  gap: 16px;
+  padding: 0 clamp(16px, 3vw, 32px) 24px;
+  align-items: start;
+}
+.grade-scroll {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.grade {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(var(--col-min), 1fr));
+  gap: 10px;
+  min-width: calc(8 * var(--col-min) + 7 * 10px);
+}
+.coluna { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.coluna-topo {
+  text-align: center;
+  padding: 4px 0 6px;
+  display: grid;
+  gap: 2px;
+  position: relative;
+}
+.coluna-topo h2 { font: 700 15px/1.2 var(--font-display); margin: 0; }
+.coluna-topo .horas { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.marcar-periodo {
+  justify-self: center;
+  margin-top: 4px;
+  border: 1px dashed var(--line);
+  background: transparent;
+  border-radius: 999px;
+  padding: 1px 10px;
+  font-size: 11.5px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.marcar-periodo:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Cartões de disciplina */
+.card {
+  position: relative;
+  min-height: 108px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  padding: 10px 10px 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform .12s, box-shadow .12s, border-color .12s, background .2s;
+}
+.card .eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); min-height: 14px; }
+.card .nome { align-self: center; font-size: 13.5px; font-weight: 500; line-height: 1.3; padding: 4px 12px; overflow-wrap: break-word; hyphens: auto; }
+.card .rodape {
+  display: flex; justify-content: space-between;
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  margin: 0 -10px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.card .icone-estado { position: absolute; top: 8px; left: 8px; width: 16px; height: 16px; }
+.card .info {
+  position: absolute; top: 6px; right: 6px;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid currentColor;
+  background: transparent;
+  font-size: 12px; font-weight: 600; line-height: 1;
+  cursor: pointer; opacity: .55;
+  display: grid; place-items: center;
+}
+.card .info:hover { opacity: 1; }
+
+.card.st-feita { background: var(--ok-bg); border-color: var(--ok-line); }
+.card.st-feita .icone-estado { color: var(--ok); }
+.card.st-disponivel { background: var(--avail-bg); border-color: var(--avail-line); box-shadow: var(--shadow); }
+.card.st-disponivel:hover { transform: translateY(-2px); }
+.card.st-bloqueada { background: var(--lock-bg); color: var(--lock-ink); border-style: dashed; }
+.card.st-bloqueada .eyebrow { color: var(--lock-ink); }
+
+.card.rel-pre { outline: 3px solid var(--rel-pre); outline-offset: 1px; }
+.card.rel-pos { outline: 3px solid var(--rel-pos); outline-offset: 1px; }
+.card.pisca { animation: pisca .45s ease-in-out 3; }
+@keyframes pisca { 50% { outline: 3px solid var(--rel-pre); outline-offset: 3px; } }
+
+/* Vagas de optativa */
+.slot {
+  min-height: 108px;
+  border-radius: var(--radius);
+  border: 2px dashed var(--avail-line);
+  background: color-mix(in srgb, var(--avail-bg) 45%, transparent);
+  display: grid;
+  place-content: center;
+  gap: 4px;
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .15s;
+}
+.slot .slot-rotulo { font: 700 14px var(--font-display); }
+.slot .slot-dica { font-size: 11.5px; color: var(--muted); }
+.slot:hover { border-color: var(--accent); }
+body.arrastando .slot.vazio, body.arrastando .card[data-slot] { border-color: var(--accent); }
+.slot.sobre, .card.sobre { background: color-mix(in srgb, var(--accent) 18%, var(--surface)); transform: scale(1.03); border-style: solid; }
+.card[data-slot] .icone-estado { display: none; }
+.card[data-slot] .remover {
+  position: absolute; top: 6px; left: 6px;
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid currentColor; background: transparent;
+  cursor: pointer; opacity: .55; font-size: 14px; line-height: 1;
+  display: grid; place-items: center;
+}
+.card[data-slot] .remover:hover { opacity: 1; color: #c0392b; }
+
+/* Banco de optativas */
+.banco {
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 24px);
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.banco.sobre { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
+.banco-topo { padding: 14px 14px 10px; display: grid; gap: 8px; border-bottom: 1px solid var(--line); }
+.banco-topo h2 { font: 700 17px var(--font-display); margin: 0; }
+.banco-topo p { margin: 0; font-size: 12.5px; color: var(--muted); }
+.campo {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+.filtros { display: flex; gap: 4px; padding: 8px 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.filtro {
+  border: 1px solid var(--line); background: transparent; border-radius: 999px;
+  padding: 2px 10px; font-size: 12.5px; cursor: pointer;
+}
+.filtro[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.banco-lista { overflow-y: auto; padding: 6px 14px 14px; display: grid; gap: 4px; align-content: start; }
+.grupo-titulo { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; margin: 10px 0 2px; }
+.opt {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  background: var(--surface);
+}
+.opt .meta { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.opt .falta { grid-column: 2 / -1; font-size: 11.5px; color: var(--lock-ink); }
+.opt.st-disponivel { background: var(--avail-bg); border-color: var(--avail-line); cursor: grab; }
+.opt.st-disponivel:hover { border-color: var(--accent); }
+.opt.st-bloqueada { color: var(--lock-ink); background: var(--lock-bg); border-style: dashed; }
+.opt.st-feita { background: var(--ok-bg); border-color: var(--ok-line); }
+.opt.st-feita .icone { color: var(--ok); }
+.opt.rel-pre { outline: 2px solid var(--rel-pre); }
+.opt.rel-pos { outline: 2px solid var(--rel-pos); }
+.vazio-msg { color: var(--muted); font-size: 13px; padding: 12px 0; }
+
+/* Fantasma durante o arraste */
+.fantasma {
+  position: fixed;
+  pointer-events: none;
+  z-index: 50;
+  transform: translate(-50%, -60%) rotate(-2deg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+  opacity: .95;
+  max-width: 260px;
+}
+body.arrastando, body.arrastando * { cursor: grabbing !important; }
+
+.nota {
+  padding: 0 clamp(16px, 3vw, 32px) 28px;
+  color: var(--muted);
+  font-size: 12.5px;
+  max-width: 900px;
+}
+.nota p { margin: 4px 0; }
+
+/* Modal */
+.veu {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(10, 16, 26, .45);
+  display: grid; place-items: center;
+  padding: 16px;
+}
+.veu[hidden] { display: none; }
+.modal {
+  background: var(--surface);
+  border-radius: 14px;
+  width: min(520px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 20px 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+  display: grid;
+  gap: 12px;
+}
+.modal h3 { font: 700 20px/1.2 var(--font-display); margin: 0; text-wrap: balance; padding-right: 28px; }
+.modal .sub { color: var(--muted); font-size: 13px; margin: -6px 0 0; }
+.modal dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0; font-size: 14px; }
+.modal dt { color: var(--muted); }
+.modal dd { margin: 0; }
+.modal .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { font-size: 12.5px; border-radius: 999px; padding: 2px 9px; border: 1px solid var(--line); }
+.chip.feita { background: var(--ok-bg); border-color: var(--ok-line); }
+.chip.pendente { background: var(--lock-bg); }
+.modal .botoes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.modal-cab { position: relative; }
+.modal-cab .x { position: absolute; top: -4px; right: -6px; border: none; background: transparent; font-size: 22px; cursor: pointer; color: var(--muted); }
+.lista-escolha { display: grid; gap: 4px; max-height: 50vh; overflow-y: auto; }
+
+/* Avisos */
+.avisos { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 60; display: grid; gap: 8px; width: min(460px, calc(100% - 32px)); }
+.aviso {
+  background: var(--ink); color: var(--bg);
+  padding: 10px 14px; border-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+}
+
+@media (max-width: 900px) {
+  .principal { grid-template-columns: 1fr; }
+  .banco { position: static; max-height: 70vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="titulo-linha">
+    <div>
+      <h1>Grade Curricular de Sistemas de Informação</h1>
+      <p>UECE / FECLI, Campus Avançado de Mombaça. Matriz do PPC versão 2 (currículo 2026). Clique nas disciplinas que você já cursou.</p>
+    </div>
+    <div class="acoes-topo">
+      <button class="btn btn-perigo" type="button" data-acao="resetar">Limpar progresso</button>
+    </div>
+  </div>
+  <div class="resumo" id="resumo"></div>
+  <div class="legenda">
+    <span><i class="amostra feita"></i>Concluída</span>
+    <span><i class="amostra disponivel"></i>Liberada para cursar</span>
+    <span><i class="amostra bloqueada"></i>Bloqueada por pré-requisito</span>
+    <span><i class="amostra pre"></i>Pré-requisito (ao passar o mouse)</span>
+    <span><i class="amostra pos"></i>Disciplinas que ela libera</span>
+  </div>
+</header>
+
+<main class="principal">
+  <div class="grade-scroll" id="gradeScroll">
+    <div class="grade" id="grade"></div>
+  </div>
+
+  <aside class="banco" id="banco" aria-label="Banco de optativas">
+    <div class="banco-topo">
+      <h2>Banco de optativas</h2>
+      <p>Arraste uma optativa que você já cursou até uma vaga de Optativa na grade. No celular, segure o dedo sobre ela ou toque na vaga para escolher.</p>
+      <label for="buscaOpt" class="tile-rotulo">Buscar optativa</label>
+      <input id="buscaOpt" class="campo" type="search" placeholder="Ex.: Inteligência, Redes, Libras" autocomplete="off">
+    </div>
+    <div class="filtros" role="group" aria-label="Filtrar optativas">
+      <button type="button" class="filtro" data-filtro="todas" aria-pressed="true">Todas</button>
+      <button type="button" class="filtro" data-filtro="disponivel" aria-pressed="false">Liberadas</button>
+      <button type="button" class="filtro" data-filtro="feita" aria-pressed="false">Na grade</button>
+      <button type="button" class="filtro" data-filtro="bloqueada" aria-pressed="false">Bloqueadas</button>
+    </div>
+    <div class="banco-lista" id="bancoLista"></div>
+  </aside>
+</main>
+
+<footer class="nota" id="nota"></footer>
+
+<div class="veu" id="veu" hidden>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo"></div>
+</div>
+<div class="avisos" id="avisos" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* ===================== Parâmetros do curso (PPC v2) ===================== */
+const HORAS_POR_CREDITO = 17;
+const TOTAL_PERIODOS = 8;
+const CREDITOS_OPTATIVAS_EXIGIDOS = 40;
+const CREDITOS_VAGA_PADRAO = 4;
+const HORAS_ATIVIDADES_COMPLEMENTARES = 119;
+const HORAS_EXTENSAO_ESPECIFICA = 153;
+const VAGAS_OPTATIVAS_POR_PERIODO = { 6: 3, 7: 4, 8: 3 };
+
+/* Parâmetros de interface */
+const ARRASTO_LIMIAR_PX = 6;
+const TOQUE_LONGO_MS = 350;
+const AUTOROLAGEM_MARGEM_PX = 60;
+const AUTOROLAGEM_PASSO_PX = 14;
+const AVISO_DURACAO_MS = 4500;
+const PISCA_DURACAO_MS = 1500;
+const CHAVE_ARMAZENAMENTO = "grade-si-uece-mombaca-v1";
+
+/* ===================== Disciplinas obrigatórias ===================== */
+/* cr = créditos totais; ext = créditos de extensão incluídos em cr; pre = pré-requisitos; co = correquisitos */
+const OBRIGATORIAS = [
+  { id: "fprog",   periodo: 1, nome: "Fundamentos de Programação", cr: 6, ext: 0, pre: [] },
+  { id: "precalc", periodo: 1, nome: "Pré-Cálculo", cr: 2, ext: 0, pre: [] },
+  { id: "matbas",  periodo: 1, nome: "Matemática Básica", cr: 4, ext: 0, pre: [] },
+  { id: "isi",     periodo: 1, nome: "Introdução aos Sistemas de Informação", cr: 2, ext: 0, pre: [] },
+  { id: "iadm",    periodo: 1, nome: "Introdução à Administração", cr: 4, ext: 1, pre: [] },
+
+  { id: "arq",     periodo: 2, nome: "Arquitetura de Computadores", cr: 4, ext: 0, pre: [] },
+  { id: "calc1",   periodo: 2, nome: "Cálculo Diferencial e Integral I", cr: 4, ext: 0, pre: ["precalc"] },
+  { id: "poo",     periodo: 2, nome: "Programação Orientada a Objetos", cr: 4, ext: 0, pre: ["fprog"] },
+  { id: "mdisc",   periodo: 2, nome: "Matemática Discreta", cr: 4, ext: 0, pre: ["matbas"] },
+  { id: "si",      periodo: 2, nome: "Sistemas de Informação", cr: 4, ext: 1, pre: ["isi", "iadm"] },
+
+  { id: "ed",      periodo: 3, nome: "Estrutura de Dados", cr: 4, ext: 0, pre: ["fprog"] },
+  { id: "fbd",     periodo: 3, nome: "Fundamentos de Bancos de Dados", cr: 4, ext: 0, pre: ["poo"] },
+  { id: "so",      periodo: 3, nome: "Sistemas Operacionais", cr: 4, ext: 0, pre: ["arq"] },
+  { id: "aps",     periodo: 3, nome: "Análise e Projeto de Sistemas", cr: 4, ext: 0, pre: ["poo"] },
+  { id: "gpn",     periodo: 3, nome: "Gestão de Processos de Negócios", cr: 4, ext: 1, pre: ["isi", "iadm"] },
+
+  { id: "probest", periodo: 4, nome: "Probabilidade e Estatística", cr: 4, ext: 0, pre: ["matbas"] },
+  { id: "redes",   periodo: 4, nome: "Redes de Computadores", cr: 4, ext: 0, pre: [] },
+  { id: "edl",     periodo: 4, nome: "Ética, Direito e Legislação", cr: 4, ext: 2, pre: [] },
+  { id: "reqs",    periodo: 4, nome: "Requisitos de Software", cr: 4, ext: 0, pre: ["aps"] },
+  { id: "gic",     periodo: 4, nome: "Gestão da Informação e do Conhecimento", cr: 4, ext: 2, pre: ["si"] },
+
+  { id: "logica",  periodo: 5, nome: "Lógica para a Computação", cr: 4, ext: 0, pre: ["mdisc"] },
+  { id: "es",      periodo: 5, nome: "Engenharia de Software", cr: 4, ext: 0, pre: ["aps"] },
+  { id: "web",     periodo: 5, nome: "Desenvolvimento de Software para Web", cr: 4, ext: 0, pre: ["poo", "fbd"] },
+  { id: "aud",     periodo: 5, nome: "Auditoria e Segurança de Sistemas de Informação", cr: 4, ext: 0, pre: [] },
+  { id: "gti",     periodo: 5, nome: "Gestão da Tecnologia da Informação", cr: 4, ext: 2, pre: ["gic"] },
+
+  { id: "gps",     periodo: 6, nome: "Gerência de Projetos de Software", cr: 4, ext: 0, pre: ["aps"] },
+  { id: "empre",   periodo: 6, nome: "Empreendedorismo", cr: 4, ext: 2, pre: [] },
+  { id: "ihc",     periodo: 6, nome: "Interação Humano-Computador", cr: 4, ext: 0, pre: [] },
+
+  { id: "est1",    periodo: 7, nome: "Estágio Supervisionado I", cr: 8, ext: 0, pre: [] },
+  { id: "ppct",    periodo: 7, nome: "Projeto de Pesquisa Científica e Tecnológica", cr: 2, ext: 0, pre: ["gps", "web", "gti"] },
+  { id: "tcc1",    periodo: 7, nome: "Trabalho de Conclusão de Curso I", cr: 4, ext: 0, pre: [], co: ["ppct"] },
+
+  { id: "est2",    periodo: 8, nome: "Estágio Supervisionado II", cr: 8, ext: 0, pre: ["est1"] },
+  { id: "tcc2",    periodo: 8, nome: "Trabalho de Conclusão de Curso II", cr: 4, ext: 0, pre: ["tcc1"] },
+];
+
+/* ===================== Disciplinas optativas ===================== */
+const OPTATIVAS = [
+  { id: "lp",      area: "Computação", nome: "Linguagens de Programação", cr: 4, pre: ["poo"] },
+  { id: "comp",    area: "Computação", nome: "Compiladores", cr: 4, pre: ["lp"] },
+  { id: "lfa",     area: "Computação", nome: "Linguagens Formais e Autômatos", cr: 4, pre: ["mdisc"] },
+  { id: "tc",      area: "Computação", nome: "Teoria da Computação", cr: 4, pre: ["mdisc"] },
+  { id: "paa",     area: "Computação", nome: "Projeto e Análise de Algoritmos", cr: 4, pre: ["ed"] },
+  { id: "ia",      area: "Computação", nome: "Inteligência Artificial", cr: 4, pre: ["logica"] },
+  { id: "sma",     area: "Computação", nome: "Sistemas Multiagentes", cr: 4, pre: [] },
+  { id: "cg",      area: "Computação", nome: "Introdução à Computação Gráfica", cr: 4, pre: ["logica"] },
+  { id: "mm",      area: "Computação", nome: "Sistemas Multimídia", cr: 4, pre: [] },
+
+  { id: "mob",     area: "Software e dados", nome: "Desenvolvimento de Software para Dispositivos Móveis", cr: 4, pre: ["poo", "redes"] },
+  { id: "conc",    area: "Software e dados", nome: "Desenvolvimento de Software Concorrente", cr: 4, pre: ["poo", "so"] },
+  { id: "qs",      area: "Software e dados", nome: "Qualidade de Software", cr: 4, pre: ["es"] },
+  { id: "sgbd",    area: "Software e dados", nome: "Construção de Sistemas de Gerência de Bancos de Dados", cr: 4, pre: ["fbd"] },
+  { id: "tabd",    area: "Software e dados", nome: "Tópicos Avançados em Bancos de Dados", cr: 4, pre: ["fbd", "aps"] },
+  { id: "aihc",    area: "Software e dados", nome: "Avaliação da Interação Humano-Computador", cr: 4, pre: [] },
+  { id: "rsoc",    area: "Software e dados", nome: "Redes Sociais", cr: 4, pre: ["web"] },
+  { id: "scol",    area: "Software e dados", nome: "Sistemas Colaborativos", cr: 4, pre: [] },
+  { id: "ebus",    area: "Software e dados", nome: "E-Business", cr: 4, pre: [] },
+
+  { id: "grd",     area: "Redes e sistemas", nome: "Gerência de Redes", cr: 4, pre: ["redes"] },
+  { id: "sd",      area: "Redes e sistemas", nome: "Sistemas Distribuídos", cr: 4, pre: ["so", "redes"] },
+  { id: "tar",     area: "Redes e sistemas", nome: "Tópicos Avançados em Redes de Computadores", cr: 4, pre: ["redes"] },
+  { id: "nuvem",   area: "Redes e sistemas", nome: "Computação em Nuvem", cr: 4, pre: [] },
+
+  { id: "alg",     area: "Matemática", nome: "Álgebra Linear", cr: 4, pre: [] },
+  { id: "calc2",   area: "Matemática", nome: "Cálculo Diferencial e Integral II", cr: 4, pre: ["calc1"] },
+
+  { id: "fin",     area: "Gestão", nome: "Finanças", cr: 4, pre: [] },
+  { id: "gpes",    area: "Gestão", nome: "Gestão de Pessoas", cr: 4, pre: [] },
+  { id: "mkt",     area: "Gestão", nome: "Marketing", cr: 4, pre: [] },
+  { id: "gprod",   area: "Gestão", nome: "Gestão de Produção", cr: 4, pre: [] },
+  { id: "cont",    area: "Gestão", nome: "Contabilidade e Custos", cr: 4, pre: [] },
+
+  { id: "ing1",    area: "Formação humana e línguas", nome: "Inglês Instrumental I", cr: 4, pre: [] },
+  { id: "ing2",    area: "Formação humana e línguas", nome: "Inglês Instrumental II", cr: 4, pre: ["ing1"] },
+  { id: "libras",  area: "Formação humana e línguas", nome: "Língua Brasileira de Sinais (Libras)", cr: 4, pre: [] },
+  { id: "rera",    area: "Formação humana e línguas", nome: "Relações Étnico-Raciais e Africanidades", cr: 4, pre: [] },
+  { id: "edh",     area: "Formação humana e línguas", nome: "Educação em Direitos Humanos", cr: 4, pre: [] },
+  { id: "eamb",    area: "Formação humana e línguas", nome: "Educação Ambiental", cr: 4, pre: [] },
+  { id: "socant",  area: "Formação humana e línguas", nome: "Sociologia e Antropologia", cr: 4, pre: [] },
+
+  { id: "te1",     area: "Tópicos especiais", nome: "Tópicos Especiais I", cr: 4, pre: [] },
+  { id: "te2",     area: "Tópicos especiais", nome: "Tópicos Especiais II", cr: 4, pre: [] },
+  { id: "te3",     area: "Tópicos especiais", nome: "Tópicos Especiais III", cr: 4, pre: [] },
+  { id: "te4",     area: "Tópicos especiais", nome: "Tópicos Especiais IV", cr: 4, pre: [] },
+
+  { id: "mobn1",   area: "Mobilidade acadêmica", nome: "Estudos de Mobilidade Nacional I", cr: 2, pre: [] },
+  { id: "mobn2",   area: "Mobilidade acadêmica", nome: "Estudos de Mobilidade Nacional II", cr: 4, pre: [] },
+  { id: "mobn3",   area: "Mobilidade acadêmica", nome: "Estudos de Mobilidade Nacional III", cr: 4, pre: [] },
+  { id: "mobn4",   area: "Mobilidade acadêmica", nome: "Estudos de Mobilidade Nacional IV", cr: 6, pre: [] },
+  { id: "mobi1",   area: "Mobilidade acadêmica", nome: "Estudos de Mobilidade Internacional I", cr: 2, pre: [] },
+  { id: "mobi2",   area: "Mobilidade acadêmica", nome: "Estudos de Mobilidade Internacional II", cr: 4, pre: [] },
+  { id: "mobi3",   area: "Mobilidade acadêmica", nome: "Estudos de Mobilidade Internacional III", cr: 4, pre: [] },
+  { id: "mobi4",   area: "Mobilidade acadêmica", nome: "Estudos de Mobilidade Internacional IV", cr: 6, pre: [] },
+];
+
+/* ===================== Estruturas derivadas ===================== */
+const ROMANOS = [["X", 10], ["IX", 9], ["V", 5], ["IV", 4], ["I", 1]];
+function romano(n) {
+  let s = "";
+  for (const [letra, valor] of ROMANOS) while (n >= valor) { s += letra; n -= valor; }
+  return s;
+}
+
+const VAGAS = [];
+for (let p = 1; p <= TOTAL_PERIODOS; p++) {
+  const qtd = VAGAS_OPTATIVAS_POR_PERIODO[p] || 0;
+  for (let i = 0; i < qtd; i++) {
+    const numero = VAGAS.length + 1;
+    VAGAS.push({ id: "vaga" + numero, periodo: p, rotulo: "Optativa " + romano(numero) });
+  }
+}
+
+const TODAS = [...OBRIGATORIAS.map(d => ({ ...d, tipo: "obrigatoria" })), ...OPTATIVAS.map(d => ({ ...d, ext: 0, tipo: "optativa" }))];
+TODAS.forEach(d => { d.pre = d.pre || []; d.co = d.co || []; });
+const POR_ID = Object.fromEntries(TODAS.map(d => [d.id, d]));
+const LIBERA = Object.fromEntries(TODAS.map(d => [d.id, []]));
+TODAS.forEach(d => [...d.pre, ...d.co].forEach(p => LIBERA[p].push(d.id)));
+
+const CREDITOS_OBRIGATORIOS = OBRIGATORIAS.reduce((s, d) => s + d.cr, 0);
+const HORAS_DISCIPLINAS = (CREDITOS_OBRIGATORIOS + CREDITOS_OPTATIVAS_EXIGIDOS) * HORAS_POR_CREDITO;
+const HORAS_TOTAIS_CURSO = HORAS_DISCIPLINAS + HORAS_ATIVIDADES_COMPLEMENTARES + HORAS_EXTENSAO_ESPECIFICA;
+
+const horas = cr => cr * HORAS_POR_CREDITO;
+const fmt = n => n.toLocaleString("pt-BR");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ===================== Estado ===================== */
+const estado = { feitas: new Set(), vagas: {} };
+const ui = { filtro: "todas", busca: "" };
+
+function carregar() {
+  try {
+    const bruto = JSON.parse(localStorage.getItem(CHAVE_ARMAZENAMENTO) || "null");
+    if (!bruto) return;
+    (bruto.feitas || []).forEach(id => { if (POR_ID[id] && POR_ID[id].tipo === "obrigatoria") estado.feitas.add(id); });
+    const idsVagas = new Set(VAGAS.map(v => v.id));
+    Object.entries(bruto.vagas || {}).forEach(([vaga, id]) => {
+      if (idsVagas.has(vaga) && POR_ID[id] && POR_ID[id].tipo === "optativa") estado.vagas[vaga] = id;
+    });
+    sanear();
+  } catch (e) { /* sem armazenamento disponível: começa vazio */ }
+}
+function salvar() {
+  try {
+    localStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify({ feitas: [...estado.feitas], vagas: estado.vagas }));
+  } catch (e) { /* ignora */ }
+}
+
+const vagaDe = id => Object.keys(estado.vagas).find(v => estado.vagas[v] === id);
+const concluida = id => estado.feitas.has(id) || vagaDe(id) !== undefined;
+
+function requisitosOk(d) {
+  return d.pre.every(concluida) && d.co.every(c => concluida(c) || POR_ID[c].pre.every(concluida));
+}
+function status(d) {
+  if (concluida(d.id)) return "feita";
+  return requisitosOk(d) ? "disponivel" : "bloqueada";
+}
+function faltando(d) {
+  return [...d.pre.filter(p => !concluida(p)), ...d.co.filter(c => !concluida(c) && !POR_ID[c].pre.every(concluida))];
+}
+
+/* Remove conclusões que deixaram de ter seus pré-requisitos atendidos. Retorna os nomes removidos. */
+function sanear() {
+  const removidas = [];
+  let mudou = true;
+  while (mudou) {
+    mudou = false;
+    for (const id of [...estado.feitas]) {
+      if (!requisitosOk(POR_ID[id])) { estado.feitas.delete(id); removidas.push(POR_ID[id].nome); mudou = true; }
+    }
+    for (const [vaga, id] of Object.entries(estado.vagas)) {
+      if (!requisitosOk(POR_ID[id])) { delete estado.vagas[vaga]; removidas.push(POR_ID[id].nome); mudou = true; }
+    }
+  }
+  return removidas;
+}
+
+function avisarCascata(removidas) {
+  if (!removidas.length) return;
+  const lista = removidas.length > 3 ? removidas.slice(0, 3).join(", ") + " e mais " + (removidas.length - 3) : removidas.join(", ");
+  aviso("Também desmarquei " + lista + ", porque dependiam dessa disciplina.");
+}
+
+function atualizar() { renderizar(); salvar(); }
+
+/* ===================== Ações ===================== */
+function alternarObrigatoria(id) {
+  const d = POR_ID[id];
+  const st = status(d);
+  if (st === "bloqueada") { avisarBloqueio(d); return; }
+  if (st === "feita") {
+    estado.feitas.delete(id);
+    const removidas = sanear();
+    avisarCascata(removidas);
+  } else {
+    estado.feitas.add(id);
+  }
+  atualizar();
+}
+
+function avisarBloqueio(d) {
+  const f = faltando(d);
+  aviso("Para liberar " + d.nome + ", conclua antes: " + f.map(x => POR_ID[x].nome).join(", ") + ".");
+  piscar(f);
+}
+
+function piscar(ids) {
+  let primeiro = null;
+  ids.forEach(id => document.querySelectorAll('[data-id="' + id + '"]').forEach(el => {
+    el.classList.remove("pisca");
+    void el.offsetWidth;
+    el.classList.add("pisca");
+    if (!primeiro && el.closest("#grade")) primeiro = el;
+    setTimeout(() => el.classList.remove("pisca"), PISCA_DURACAO_MS);
+  }));
+  if (primeiro) primeiro.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+}
+
+function colocarOptativa(optId, vagaId) {
+  const d = POR_ID[optId];
+  if (!d || d.tipo !== "optativa") return;
+  if (!concluida(optId) && !requisitosOk(d)) { avisarBloqueio(d); return; }
+  const anterior = vagaDe(optId);
+  if (anterior === vagaId) return;
+  const ocupante = estado.vagas[vagaId];
+  if (anterior) delete estado.vagas[anterior];
+  if (ocupante && anterior) estado.vagas[anterior] = ocupante;
+  estado.vagas[vagaId] = optId;
+  avisarCascata(sanear());
+  atualizar();
+}
+
+function removerDaVaga(vagaId) {
+  if (!estado.vagas[vagaId]) return;
+  delete estado.vagas[vagaId];
+  avisarCascata(sanear());
+  atualizar();
+}
+
+function primeiraVagaLivre() { return VAGAS.find(v => !estado.vagas[v.id]); }
+
+function marcarPeriodo(p) {
+  let mudou = true;
+  let marcadas = 0;
+  while (mudou) {
+    mudou = false;
+    OBRIGATORIAS.filter(d => d.periodo === p).forEach(d => {
+      if (status(POR_ID[d.id]) === "disponivel") { estado.feitas.add(d.id); marcadas++; mudou = true; }
+    });
+  }
+  const restantes = OBRIGATORIAS.filter(d => d.periodo === p && !concluida(d.id));
+  if (restantes.length) aviso("Ficaram bloqueadas no " + p + "º período: " + restantes.map(d => d.nome).join(", ") + ".");
+  else if (!marcadas) aviso("Todas as obrigatórias do " + p + "º período já estão concluídas.");
+  atualizar();
+}
+
+/* ===================== Renderização ===================== */
+const ICONES = {
+  feita: '<svg class="icone-estado icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M4.5 8.2l2.3 2.3 4.7-4.9" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  disponivel: '<svg class="icone-estado icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/></svg>',
+  bloqueada: '<svg class="icone-estado icone" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="7" rx="1.5" fill="currentColor"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>',
+};
+const ROTULO_STATUS = { feita: "concluída", disponivel: "liberada", bloqueada: "bloqueada" };
+
+function cartaoObrigatoria(d) {
+  const st = status(d);
+  return '<div class="card st-' + st + '" data-id="' + d.id + '" data-acao="alternar" role="button" tabindex="0" aria-pressed="' + (st === "feita") + '" aria-label="' + esc(d.nome) + ", " + ROTULO_STATUS[st] + '">' +
+    ICONES[st] +
+    '<button type="button" class="info" data-acao="info" data-alvo="' + d.id + '" aria-label="Detalhes de ' + esc(d.nome) + '">i</button>' +
+    '<span class="eyebrow"></span>' +
+    '<span class="nome">' + esc(d.nome) + '</span>' +
+    '<span class="rodape"><span>' + horas(d.cr) + ' h</span><span>' + d.cr + ' cr</span></span>' +
+    '</div>';
+}
+
+function cartaoVaga(v) {
+  const optId = estado.vagas[v.id];
+  if (!optId) {
+    return '<div class="slot vazio" data-slot="' + v.id + '" data-acao="escolher" role="button" tabindex="0" aria-label="' + v.rotulo + ', vaga livre. Escolher optativa">' +
+      '<span class="slot-rotulo">' + v.rotulo + '</span>' +
+      '<span class="slot-dica">Arraste uma optativa ou clique para escolher</span>' +
+      '<span class="slot-dica">' + horas(CREDITOS_VAGA_PADRAO) + ' horas</span></div>';
+  }
+  const d = POR_ID[optId];
+  return '<div class="card st-feita" data-id="' + d.id + '" data-slot="' + v.id + '" data-arrasta="' + d.id + '" data-acao="info" data-alvo="' + d.id + '" role="button" tabindex="0" aria-label="' + v.rotulo + ': ' + esc(d.nome) + '">' +
+    ICONES.feita +
+    '<button type="button" class="info" data-acao="info" data-alvo="' + d.id + '" aria-label="Detalhes de ' + esc(d.nome) + '">i</button>' +
+    '<span class="eyebrow">' + v.rotulo + '</span>' +
+    '<span class="nome">' + esc(d.nome) + '</span>' +
+    '<button type="button" class="remover" data-acao="remover" data-vaga="' + v.id + '" aria-label="Remover ' + esc(d.nome) + ' da grade" title="Remover da grade">×</button>' +
+    '<span class="rodape"><span>' + horas(d.cr) + ' h</span><span>' + d.cr + ' cr</span></span>' +
+    '</div>';
+}
+
+function renderGrade() {
+  let html = "";
+  for (let p = 1; p <= TOTAL_PERIODOS; p++) {
+    const obrig = OBRIGATORIAS.filter(d => d.periodo === p);
+    const vagas = VAGAS.filter(v => v.periodo === p);
+    const cr = obrig.reduce((s, d) => s + d.cr, 0) + vagas.reduce((s, v) => s + (estado.vagas[v.id] ? POR_ID[estado.vagas[v.id]].cr : CREDITOS_VAGA_PADRAO), 0);
+    html += '<section class="coluna" aria-label="' + p + 'º período">' +
+      '<div class="coluna-topo"><h2>' + p + 'º Período</h2><span class="horas">' + fmt(horas(cr)) + ' horas</span>' +
+      '<button type="button" class="marcar-periodo" data-acao="periodo" data-periodo="' + p + '">marcar período</button></div>' +
+      obrig.map(d => cartaoObrigatoria(POR_ID[d.id])).join("") +
+      vagas.map(cartaoVaga).join("") +
+      '</section>';
+  }
+  document.getElementById("grade").innerHTML = html;
+}
+
+function itemOptativa(d) {
+  const st = status(d);
+  const vaga = vagaDe(d.id);
+  const meta = st === "feita" ? VAGAS.find(v => v.id === vaga).rotulo : horas(d.cr) + " h";
+  const falta = st === "bloqueada" ? '<span class="falta">Requer: ' + faltando(d).map(x => esc(POR_ID[x].nome)).join(", ") + '</span>' : "";
+  const arrastavel = st !== "bloqueada" ? ' data-arrasta="' + d.id + '"' : "";
+  return '<div class="opt st-' + st + '" data-id="' + d.id + '"' + arrastavel + ' data-acao="info" data-alvo="' + d.id + '" role="button" tabindex="0" aria-label="' + esc(d.nome) + ", " + ROTULO_STATUS[st] + '">' +
+    ICONES[st].replace("icone-estado ", "") +
+    '<span>' + esc(d.nome) + '</span><span class="meta">' + meta + '</span>' + falta + '</div>';
+}
+
+function normalizar(s) { return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+
+function renderBanco() {
+  const termo = normalizar(ui.busca.trim());
+  const lista = OPTATIVAS.map(d => POR_ID[d.id]).filter(d =>
+    (ui.filtro === "todas" || status(d) === ui.filtro) && (!termo || normalizar(d.nome).includes(termo)));
+  const areas = [...new Set(OPTATIVAS.map(d => d.area))];
+  let html = "";
+  areas.forEach(a => {
+    const doGrupo = lista.filter(d => d.area === a);
+    if (doGrupo.length) html += '<div class="grupo-titulo">' + a + '</div>' + doGrupo.map(itemOptativa).join("");
+  });
+  document.getElementById("bancoLista").innerHTML = html || '<p class="vazio-msg">Nenhuma optativa encontrada com esse filtro.</p>';
+}
+
+function tile(rotulo, valor, total, sufixo, fracao) {
+  const pct = Math.min(100, Math.round(fracao * 100));
+  return '<div class="tile"><span class="tile-rotulo">' + rotulo + '</span>' +
+    '<span class="tile-valor">' + valor + ' <small>' + total + sufixo + '</small></span>' +
+    '<div class="barra" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><span style="width:' + pct + '%"></span></div></div>';
+}
+
+function renderResumo() {
+  const nObrig = OBRIGATORIAS.filter(d => estado.feitas.has(d.id)).length;
+  const crObrig = OBRIGATORIAS.filter(d => estado.feitas.has(d.id)).reduce((s, d) => s + d.cr, 0);
+  const crOpt = Object.values(estado.vagas).reduce((s, id) => s + POR_ID[id].cr, 0);
+  const crOptContado = Math.min(crOpt, CREDITOS_OPTATIVAS_EXIGIDOS);
+  const hFeitas = horas(crObrig + crOptContado);
+  const liberadas = OBRIGATORIAS.filter(d => status(POR_ID[d.id]) === "disponivel").length;
+  document.getElementById("resumo").innerHTML =
+    tile("Obrigatórias concluídas", nObrig, "de " + OBRIGATORIAS.length, "", nObrig / OBRIGATORIAS.length) +
+    tile("Créditos em optativas", crOpt, "de " + CREDITOS_OPTATIVAS_EXIGIDOS, " cr", crOpt / CREDITOS_OPTATIVAS_EXIGIDOS) +
+    tile("Carga horária em disciplinas", fmt(hFeitas), "de " + fmt(HORAS_DISCIPLINAS), " h", hFeitas / HORAS_DISCIPLINAS) +
+    '<div class="tile"><span class="tile-rotulo">Obrigatórias liberadas agora</span><span class="tile-valor">' + liberadas +
+    ' <small>' + (liberadas === 1 ? "disciplina" : "disciplinas") + '</small></span>' +
+    '<span class="tile-rotulo">Em amarelo na grade</span></div>';
+}
+
+function renderNota() {
+  document.getElementById("nota").innerHTML =
+    '<p>Carga horária total do curso: ' + fmt(HORAS_TOTAIS_CURSO) + ' h, sendo ' + fmt(HORAS_DISCIPLINAS) + ' h em disciplinas (' + CREDITOS_OBRIGATORIOS + ' créditos obrigatórios e ' + CREDITOS_OPTATIVAS_EXIGIDOS + ' em optativas), ' +
+    HORAS_ATIVIDADES_COMPLEMENTARES + ' h de Atividades Complementares e ' + HORAS_EXTENSAO_ESPECIFICA + ' h de Atividades Específicas de Extensão. Cada crédito equivale a ' + HORAS_POR_CREDITO + ' horas.</p>' +
+    '<p>Trabalho de Conclusão de Curso I tem Projeto de Pesquisa Científica e Tecnológica como correquisito: ela é liberada assim que as duas puderem ser cursadas juntas. Seu progresso fica salvo apenas neste navegador.</p>';
+}
+
+function renderizar() {
+  renderResumo();
+  renderGrade();
+  renderBanco();
+}
+
+/* ===================== Modal ===================== */
+const veu = document.getElementById("veu");
+const modal = document.getElementById("modal");
+let focoAnterior = null;
+
+function abrirModal(html) {
+  focoAnterior = document.activeElement;
+  modal.innerHTML = html;
+  veu.hidden = false;
+  const alvo = modal.querySelector("[autofocus], input, button.btn-primario, button");
+  if (alvo) alvo.focus();
+}
+function fecharModal() {
+  veu.hidden = true;
+  modal.innerHTML = "";
+  if (focoAnterior && document.contains(focoAnterior)) focoAnterior.focus();
+}
+
+function chips(ids) {
+  if (!ids.length) return "Nenhum";
+  return '<span class="chips">' + ids.map(x => '<span class="chip ' + (concluida(x) ? "feita" : "pendente") + '">' + esc(POR_ID[x].nome) + '</span>').join("") + '</span>';
+}
+
+function cabecalhoModal(titulo, sub) {
+  return '<div class="modal-cab"><h3 id="modalTitulo">' + esc(titulo) + '</h3><button type="button" class="x" data-acao="fechar" aria-label="Fechar">×</button></div>' +
+    (sub ? '<p class="sub">' + sub + '</p>' : "");
+}
+
+function abrirInfo(id) {
+  const d = POR_ID[id];
+  const st = status(d);
+  const sub = d.tipo === "obrigatoria" ? "Obrigatória do " + d.periodo + "º período, " + ROTULO_STATUS[st] : "Optativa, " + d.area.toLowerCase() + ", " + ROTULO_STATUS[st];
+  const cr = d.cr + " créditos" + (d.ext ? " (" + d.ext + " de extensão)" : "");
+  let botoes = "";
+  if (d.tipo === "obrigatoria") {
+    if (st === "feita") botoes = '<button type="button" class="btn" data-acao="alternar-modal" data-alvo="' + id + '">Desmarcar</button>';
+    else if (st === "disponivel") botoes = '<button type="button" class="btn btn-primario" data-acao="alternar-modal" data-alvo="' + id + '">Marcar como concluída</button>';
+  } else {
+    const vaga = vagaDe(id);
+    if (vaga) botoes = '<button type="button" class="btn" data-acao="remover-modal" data-vaga="' + vaga + '">Remover da grade</button>';
+    else if (st === "disponivel") {
+      const livre = primeiraVagaLivre();
+      botoes = livre ? '<button type="button" class="btn btn-primario" data-acao="colocar" data-alvo="' + id + '" data-vaga="' + livre.id + '">Colocar em ' + livre.rotulo + '</button>'
+        : '<span class="sub">Todas as vagas de optativa estão ocupadas. Remova uma para colocar esta.</span>';
+    }
+  }
+  abrirModal(cabecalhoModal(d.nome, sub) +
+    '<dl><dt>Carga horária</dt><dd>' + horas(d.cr) + ' horas</dd>' +
+    '<dt>Créditos</dt><dd>' + cr + '</dd>' +
+    '<dt>Pré-requisitos</dt><dd>' + chips(d.pre) + '</dd>' +
+    (d.co.length ? '<dt>Correquisito</dt><dd>' + chips(d.co) + '</dd>' : "") +
+    '<dt>Libera</dt><dd>' + chips(LIBERA[id]) + '</dd></dl>' +
+    '<div class="botoes">' + botoes + '<button type="button" class="btn" data-acao="fechar">Fechar</button></div>');
+}
+
+function abrirEscolha(vagaId) {
+  const vaga = VAGAS.find(v => v.id === vagaId);
+  const disponiveis = OPTATIVAS.map(d => POR_ID[d.id]).filter(d => status(d) === "disponivel");
+  const bloqueadas = OPTATIVAS.filter(d => status(POR_ID[d.id]) === "bloqueada").length;
+  abrirModal(cabecalhoModal("Escolher " + vaga.rotulo, "Optativas liberadas que ainda não estão na grade.") +
+    '<label class="tile-rotulo" for="buscaEscolha">Buscar</label><input id="buscaEscolha" class="campo" type="search" autocomplete="off" autofocus>' +
+    '<div class="lista-escolha" id="listaEscolha">' +
+    disponiveis.map(d => '<button type="button" class="opt st-disponivel" data-acao="colocar" data-alvo="' + d.id + '" data-vaga="' + vagaId + '" data-nome="' + esc(normalizar(d.nome)) + '">' +
+      ICONES.disponivel.replace("icone-estado ", "") + '<span>' + esc(d.nome) + '</span><span class="meta">' + horas(d.cr) + ' h</span></button>').join("") +
+    '</div>' +
+    (bloqueadas ? '<p class="sub">' + bloqueadas + ' optativas ainda dependem de pré-requisitos e não aparecem aqui.</p>' : "") +
+    '<div class="botoes"><button type="button" class="btn" data-acao="fechar">Cancelar</button></div>');
+  document.getElementById("buscaEscolha").addEventListener("input", e => {
+    const t = normalizar(e.target.value.trim());
+    document.querySelectorAll("#listaEscolha [data-nome]").forEach(b => { b.hidden = t && !b.dataset.nome.includes(t); });
+  });
+}
+
+function abrirResetar() {
+  abrirModal(cabecalhoModal("Limpar todo o progresso?", "Todas as disciplinas marcadas e as optativas colocadas na grade serão apagadas deste navegador.") +
+    '<div class="botoes"><button type="button" class="btn" data-acao="fechar">Cancelar</button>' +
+    '<button type="button" class="btn btn-primario" data-acao="confirmar-reset">Limpar</button></div>');
+}
+
+/* ===================== Avisos ===================== */
+function aviso(texto) {
+  const el = document.createElement("div");
+  el.className = "aviso";
+  el.textContent = texto;
+  const box = document.getElementById("avisos");
+  box.appendChild(el);
+  while (box.children.length > 2) box.firstChild.remove();
+  setTimeout(() => el.remove(), AVISO_DURACAO_MS);
+}
+
+/* ===================== Cliques e teclado ===================== */
+let ignorarClique = false;
+
+document.addEventListener("click", e => {
+  if (ignorarClique) { ignorarClique = false; e.preventDefault(); return; }
+  if (e.target === veu) { fecharModal(); return; }
+  const filtro = e.target.closest("[data-filtro]");
+  if (filtro) {
+    ui.filtro = filtro.dataset.filtro;
+    document.querySelectorAll("[data-filtro]").forEach(b => b.setAttribute("aria-pressed", String(b === filtro)));
+    renderBanco();
+    return;
+  }
+  const el = e.target.closest("[data-acao]");
+  if (!el) return;
+  const acao = el.dataset.acao;
+  switch (acao) {
+    case "alternar": alternarObrigatoria(el.dataset.id); break;
+    case "info": abrirInfo(el.dataset.alvo); break;
+    case "escolher": abrirEscolha(el.dataset.slot); break;
+    case "remover": removerDaVaga(el.dataset.vaga); break;
+    case "periodo": marcarPeriodo(Number(el.dataset.periodo)); break;
+    case "resetar": abrirResetar(); break;
+    case "fechar": fecharModal(); break;
+    case "alternar-modal": fecharModal(); alternarObrigatoria(el.dataset.alvo); break;
+    case "remover-modal": fecharModal(); removerDaVaga(el.dataset.vaga); break;
+    case "colocar": fecharModal(); colocarOptativa(el.dataset.alvo, el.dataset.vaga); break;
+    case "confirmar-reset":
+      estado.feitas.clear();
+      Object.keys(estado.vagas).forEach(k => delete estado.vagas[k]);
+      fecharModal();
+      atualizar();
+      aviso("Progresso apagado.");
+      break;
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !veu.hidden) { fecharModal(); return; }
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches('[role="button"][data-acao]')) {
+    e.preventDefault();
+    e.target.click();
+  }
+});
+
+document.getElementById("buscaOpt").addEventListener("input", e => { ui.busca = e.target.value; renderBanco(); });
+
+/* Destaque de pré-requisitos e do que a disciplina libera ao passar o mouse */
+let destacado = null;
+function limparDestaque() {
+  document.querySelectorAll(".rel-pre, .rel-pos").forEach(el => el.classList.remove("rel-pre", "rel-pos"));
+  destacado = null;
+}
+document.addEventListener("mouseover", e => {
+  if (arrasto && arrasto.ativo) return;
+  const el = e.target.closest("[data-id]");
+  const id = el ? el.dataset.id : null;
+  if (id === destacado) return;
+  limparDestaque();
+  if (!id) return;
+  destacado = id;
+  const d = POR_ID[id];
+  [...d.pre, ...d.co].forEach(p => document.querySelectorAll('[data-id="' + p + '"]').forEach(x => x.classList.add("rel-pre")));
+  LIBERA[id].forEach(p => document.querySelectorAll('[data-id="' + p + '"]').forEach(x => x.classList.add("rel-pos")));
+});
+
+/* ===================== Arrastar e soltar optativas ===================== */
+let arrasto = null;
+const gradeScroll = document.getElementById("gradeScroll");
+const banco = document.getElementById("banco");
+
+document.addEventListener("pointerdown", e => {
+  if (e.button > 0 || !veu.hidden) return;
+  if (e.target.closest("button.info, button.remover")) return;
+  const fonte = e.target.closest("[data-arrasta]");
+  if (!fonte) return;
+  arrasto = {
+    optId: fonte.dataset.arrasta,
+    origemVaga: fonte.dataset.slot || null,
+    fonte, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY,
+    toque: e.pointerType === "touch",
+    ativo: false, fantasma: null, alvo: null, timer: null, raf: null,
+  };
+  if (arrasto.toque) arrasto.timer = setTimeout(ativarArrasto, TOQUE_LONGO_MS);
+  document.addEventListener("pointermove", moverArrasto);
+  document.addEventListener("pointerup", soltarArrasto);
+  document.addEventListener("pointercancel", cancelarArrasto);
+});
+
+function ativarArrasto() {
+  if (!arrasto) return;
+  arrasto.ativo = true;
+  limparDestaque();
+  const f = arrasto.fonte.cloneNode(true);
+  f.classList.add("fantasma");
+  f.style.width = Math.min(arrasto.fonte.offsetWidth, 260) + "px";
+  f.removeAttribute("data-id");
+  document.body.appendChild(f);
+  arrasto.fantasma = f;
+  document.body.classList.add("arrastando");
+  posicionarFantasma();
+  arrasto.raf = requestAnimationFrame(autorolar);
+}
+
+function moverArrasto(e) {
+  if (!arrasto) return;
+  arrasto.x = e.clientX; arrasto.y = e.clientY;
+  const desloc = Math.hypot(arrasto.x - arrasto.x0, arrasto.y - arrasto.y0);
+  if (!arrasto.ativo) {
+    if (desloc < ARRASTO_LIMIAR_PX) return;
+    if (arrasto.toque) { cancelarArrasto(); return; }
+    ativarArrasto();
+  }
+  posicionarFantasma();
+}
+
+function posicionarFantasma() {
+  const a = arrasto;
+  a.fantasma.style.left = a.x + "px";
+  a.fantasma.style.top = a.y + "px";
+  const sob = document.elementFromPoint(a.x, a.y);
+  const vaga = sob ? sob.closest("[data-slot]") : null;
+  const noBanco = sob ? sob.closest("#banco") : null;
+  const novoAlvo = vaga || (noBanco && a.origemVaga ? banco : null);
+  if (novoAlvo !== a.alvo) {
+    if (a.alvo) a.alvo.classList.remove("sobre");
+    a.alvo = novoAlvo;
+    if (a.alvo) a.alvo.classList.add("sobre");
+  }
+}
+
+function autorolar() {
+  if (!arrasto || !arrasto.ativo) return;
+  const r = gradeScroll.getBoundingClientRect();
+  let rolou = false;
+  if (arrasto.y > r.top && arrasto.y < r.bottom) {
+    if (arrasto.x < r.left + AUTOROLAGEM_MARGEM_PX && gradeScroll.scrollLeft > 0) { gradeScroll.scrollLeft -= AUTOROLAGEM_PASSO_PX; rolou = true; }
+    else if (arrasto.x > r.right - AUTOROLAGEM_MARGEM_PX && arrasto.x < r.right) { gradeScroll.scrollLeft += AUTOROLAGEM_PASSO_PX; rolou = true; }
+  }
+  if (arrasto.y < AUTOROLAGEM_MARGEM_PX) { window.scrollBy(0, -AUTOROLAGEM_PASSO_PX); rolou = true; }
+  else if (arrasto.y > window.innerHeight - AUTOROLAGEM_MARGEM_PX) { window.scrollBy(0, AUTOROLAGEM_PASSO_PX); rolou = true; }
+  if (rolou) posicionarFantasma();
+  arrasto.raf = requestAnimationFrame(autorolar);
+}
+
+function soltarArrasto() {
+  if (!arrasto) return;
+  const a = arrasto;
+  if (a.ativo) {
+    ignorarClique = true;
+    setTimeout(() => { ignorarClique = false; }, 0);
+    if (a.alvo === banco) removerDaVaga(a.origemVaga);
+    else if (a.alvo) colocarOptativa(a.optId, a.alvo.dataset.slot);
+  }
+  encerrarArrasto();
+}
+
+function cancelarArrasto() { encerrarArrasto(); }
+
+function encerrarArrasto() {
+  if (!arrasto) return;
+  clearTimeout(arrasto.timer);
+  cancelAnimationFrame(arrasto.raf);
+  if (arrasto.fantasma) arrasto.fantasma.remove();
+  if (arrasto.alvo) arrasto.alvo.classList.remove("sobre");
+  document.body.classList.remove("arrastando");
+  document.removeEventListener("pointermove", moverArrasto);
+  document.removeEventListener("pointerup", soltarArrasto);
+  document.removeEventListener("pointercancel", cancelarArrasto);
+  arrasto = null;
+}
+
+/* No toque, impede a rolagem da página enquanto uma optativa é arrastada */
+document.addEventListener("touchmove", e => { if (arrasto && arrasto.ativo) e.preventDefault(); }, { passive: false });
+document.addEventListener("contextmenu", e => { if (arrasto) e.preventDefault(); });
+
+/* ===================== Início ===================== */
+carregar();
+renderNota();
+renderizar();
+</script>
+</body>
+</html>
