@@ -6,390 +6,277 @@
 <title>Grade Curricular SI UECE Mombaça</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto+Slab:wght@600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout: cabeçalho com resumo, grade de 8 períodos (rolagem horizontal) e banco de optativas fixo à direita */
+/* Layout: faixa verde institucional da UECE no topo, resumo, grade de 8 períodos com rolagem horizontal e banco de optativas à direita.
+   Tema único claro, seguindo o site oficial da UECE. Cada cartão recebe a cor do seu núcleo pela variável --n. */
 :root {
-  --bg: #eef1f4;
+  --uece-verde: #00a84a;
+  --uece-verde-escuro: #008442;
+  --uece-verde-profundo: #04582d;
+  --uece-verde-claro: #4cbb76;
+  --uece-grafite: #485156;
+
+  --bg: #f4f6f5;
   --surface: #ffffff;
-  --ink: #17233a;
-  --muted: #5d6b80;
-  --line: #d5dbe3;
-  --accent: #1f5f8b;
-  --accent-ink: #ffffff;
+  --ink: #1f2a2e;
+  --muted: #5f6b70;
+  --line: #d9dfdc;
+  --bloq-bg: #eef0ef;
+  --bloq-ink: #9aa3a6;
+  --bloq-linha: #c7cdca;
 
-  --ok: #2f8f5b;
-  --ok-bg: #e2f3e8;
-  --ok-line: #9fd2b3;
-  --avail-bg: #fff4bf;
-  --avail-line: #e7c94a;
-  --lock-bg: #f2e6e8;
-  --lock-ink: #a88f95;
-  --rel-pre: #d9792b;
-  --rel-pos: #6a4fc4;
+  --font-display: "Roboto Slab", Georgia, serif;
+  --font-body: "Open Sans", Helvetica, Arial, sans-serif;
 
-  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
-
-  --radius: 10px;
-  --shadow: 0 1px 2px rgba(23, 35, 58, .08), 0 2px 8px rgba(23, 35, 58, .06);
+  --radius: 8px;
+  --shadow: 0 1px 2px rgba(31, 42, 46, .08), 0 3px 10px rgba(31, 42, 46, .07);
   --col-min: 156px;
   --banco-largura: 320px;
+  --faixa-nucleo: 6px;
   color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #11161f;
-    --surface: #1a212d;
-    --ink: #e6ebf2;
-    --muted: #9aa6b8;
-    --line: #2c3545;
-    --accent: #5aa7dc;
-    --accent-ink: #0d1520;
-    --ok: #5cc48a;
-    --ok-bg: #173327;
-    --ok-line: #2f6b4b;
-    --avail-bg: #3a3214;
-    --avail-line: #8f7a22;
-    --lock-bg: #221d22;
-    --lock-ink: #6f6168;
-    --rel-pre: #f0994f;
-    --rel-pos: #a28bf0;
-    --shadow: 0 1px 2px rgba(0, 0, 0, .4);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #11161f;
-  --surface: #1a212d;
-  --ink: #e6ebf2;
-  --muted: #9aa6b8;
-  --line: #2c3545;
-  --accent: #5aa7dc;
-  --accent-ink: #0d1520;
-  --ok: #5cc48a;
-  --ok-bg: #173327;
-  --ok-line: #2f6b4b;
-  --avail-bg: #3a3214;
-  --avail-line: #8f7a22;
-  --lock-bg: #221d22;
-  --lock-ink: #6f6168;
-  --rel-pre: #f0994f;
-  --rel-pos: #a28bf0;
-  --shadow: 0 1px 2px rgba(0, 0, 0, .4);
-  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font: 15px/1.45 var(--font-body);
-}
+body { background: var(--bg); color: var(--ink); font: 14.5px/1.45 var(--font-body); }
 button { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--uece-verde-profundo); outline-offset: 2px; }
 
-/* Cabeçalho */
-.topo {
-  display: grid;
-  gap: 16px;
-  padding: 20px clamp(16px, 3vw, 32px) 12px;
+/* Faixa institucional */
+.faixa {
+  background: linear-gradient(100deg, var(--uece-verde-escuro) 0%, var(--uece-verde) 55%, var(--uece-verde-claro) 100%);
+  color: #fff;
+  padding: 22px clamp(16px, 3vw, 32px);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
 }
-.titulo-linha { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
-.titulo-linha h1 {
-  font: 700 clamp(22px, 2.6vw, 30px)/1.1 var(--font-display);
-  margin: 0;
-  text-wrap: balance;
-}
-.titulo-linha p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
-.acoes-topo { display: flex; gap: 8px; flex-wrap: wrap; }
+.faixa h1 { font: 700 clamp(22px, 2.6vw, 30px)/1.15 var(--font-display); margin: 0; text-wrap: balance; }
+.faixa p { margin: 4px 0 0; font-size: 15px; opacity: .95; }
 .btn {
-  border: 1px solid var(--line);
-  background: var(--surface);
-  border-radius: 8px;
-  padding: 7px 12px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  border: 1px solid var(--line); background: var(--surface);
+  border-radius: 6px; padding: 7px 14px; cursor: pointer;
+  font-size: 14px; font-weight: 600;
 }
-.btn:hover { border-color: var(--accent); }
-.btn-primario { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.btn-perigo:hover { border-color: #c0392b; color: #c0392b; }
+.btn:hover { border-color: var(--uece-verde); }
+.btn-primario { background: var(--uece-verde); color: #fff; border-color: var(--uece-verde); }
+.btn-primario:hover { background: var(--uece-verde-escuro); }
+.btn-claro { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .7); }
+.btn-claro:hover { background: rgba(255, 255, 255, .15); border-color: #fff; }
 
-.resumo {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 10px;
-}
+.painel { display: grid; gap: 14px; padding: 16px clamp(16px, 3vw, 32px) 12px; }
+.resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
 .tile {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 10px 14px;
-  display: grid;
-  gap: 6px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  border-left: 4px solid var(--uece-verde);
+  padding: 10px 14px; display: grid; gap: 6px;
 }
-.tile-rotulo { font-size: 12.5px; color: var(--muted); font-weight: 500; }
-.tile-valor { font: 700 22px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.tile-rotulo { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.tile-valor { font: 700 22px/1 var(--font-display); color: var(--uece-verde-profundo); font-variant-numeric: tabular-nums; }
 .tile-valor small { font: 500 14px var(--font-body); color: var(--muted); }
 .barra { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
-.barra > span { display: block; height: 100%; background: var(--ok); border-radius: 3px; transition: width .3s; }
+.barra > span { display: block; height: 100%; background: var(--uece-verde); border-radius: 3px; transition: width .3s; }
 
-.legenda { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--muted); align-items: center; }
-.legenda span { display: inline-flex; align-items: center; gap: 6px; }
-.amostra { width: 14px; height: 14px; border-radius: 4px; border: 1px solid; display: inline-block; }
-.amostra.feita { background: var(--ok-bg); border-color: var(--ok-line); }
-.amostra.disponivel { background: var(--avail-bg); border-color: var(--avail-line); }
-.amostra.bloqueada { background: var(--lock-bg); border-color: var(--line); }
-.amostra.pre { background: transparent; border: 2px solid var(--rel-pre); }
-.amostra.pos { background: transparent; border: 2px solid var(--rel-pos); }
+/* Legenda */
+.legenda {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 10px 14px; display: grid; gap: 10px;
+}
+.legenda-grupo { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 13px; }
+.legenda-grupo > strong { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); min-width: 150px; }
+.legenda-item { display: inline-flex; align-items: center; gap: 6px; }
+.amostra { width: 16px; height: 16px; border-radius: 4px; background: var(--n); display: inline-block; flex: none; }
+.mini {
+  width: 28px; height: 20px; border-radius: 4px; display: inline-block; flex: none;
+  border: 1px solid var(--line); border-top: 5px solid var(--uece-verde-escuro);
+}
+.mini.disponivel { background: var(--surface); box-shadow: var(--shadow); }
+.mini.feita { background: var(--uece-verde-escuro); }
+.mini.bloqueada { background: var(--bloq-bg); border-style: dashed; border-top: 5px solid var(--bloq-linha); }
+.selo-rel { font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px; }
+.selo-pre { background: var(--ink); color: #fff; }
+.selo-pos { background: #fff; color: var(--ink); border: 2px dashed var(--ink); }
 
 /* Área principal */
 .principal {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--banco-largura);
-  gap: 16px;
-  padding: 0 clamp(16px, 3vw, 32px) 24px;
-  align-items: start;
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--banco-largura);
+  gap: 16px; padding: 4px clamp(16px, 3vw, 32px) 28px; align-items: start;
 }
-.grade-scroll {
-  overflow-x: auto;
-  padding-bottom: 8px;
-}
+.grade-scroll { overflow-x: auto; padding: 12px 2px 8px; }
 .grade {
-  display: grid;
-  grid-template-columns: repeat(8, minmax(var(--col-min), 1fr));
-  gap: 10px;
-  min-width: calc(8 * var(--col-min) + 7 * 10px);
+  display: grid; grid-template-columns: repeat(8, minmax(var(--col-min), 1fr));
+  gap: 10px; min-width: calc(8 * var(--col-min) + 7 * 10px);
 }
-.coluna { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.coluna { display: grid; gap: 10px; align-content: start; min-width: 0; }
 .coluna-topo {
-  text-align: center;
-  padding: 4px 0 6px;
-  display: grid;
-  gap: 2px;
-  position: relative;
+  text-align: center; padding: 6px 0 8px; display: grid; gap: 2px;
+  border-bottom: 3px solid var(--uece-verde); margin-bottom: 2px;
 }
-.coluna-topo h2 { font: 700 15px/1.2 var(--font-display); margin: 0; }
+.coluna-topo h2 { font: 700 15px/1.2 var(--font-display); margin: 0; color: var(--uece-verde-profundo); }
 .coluna-topo .horas { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .marcar-periodo {
-  justify-self: center;
-  margin-top: 4px;
-  border: 1px dashed var(--line);
-  background: transparent;
-  border-radius: 999px;
-  padding: 1px 10px;
-  font-size: 11.5px;
-  color: var(--muted);
-  cursor: pointer;
+  justify-self: center; margin-top: 4px; border: 1px dashed var(--bloq-linha); background: transparent;
+  border-radius: 999px; padding: 1px 10px; font-size: 11.5px; color: var(--muted); cursor: pointer;
 }
-.marcar-periodo:hover { border-color: var(--accent); color: var(--accent); }
+.marcar-periodo:hover { border-color: var(--uece-verde); color: var(--uece-verde-escuro); }
 
-/* Cartões de disciplina */
+/* Cartões de disciplina: a cor do núcleo vem em --n e a cor do texto sobre ela em --n-texto */
 .card {
-  position: relative;
-  min-height: 108px;
+  position: relative; min-height: 112px;
   border-radius: var(--radius);
-  border: 1px solid var(--line);
-  padding: 10px 10px 0;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-  transition: transform .12s, box-shadow .12s, border-color .12s, background .2s;
+  border: 1px solid color-mix(in srgb, var(--n) 40%, var(--line));
+  border-top: var(--faixa-nucleo) solid var(--n);
+  background: var(--surface);
+  padding: 8px 10px 0;
+  display: grid; grid-template-rows: auto 1fr auto;
+  text-align: center; cursor: pointer;
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  transition: transform .12s, box-shadow .12s, background .2s;
 }
-.card .eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); min-height: 14px; }
-.card .nome { align-self: center; font-size: 13.5px; font-weight: 500; line-height: 1.3; padding: 4px 12px; overflow-wrap: break-word; hyphens: auto; }
+.card .eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; opacity: .8; min-height: 14px; }
+.card .nome { align-self: center; font-size: 13.5px; font-weight: 600; line-height: 1.3; padding: 4px 12px; overflow-wrap: break-word; }
 .card .rodape {
   display: flex; justify-content: space-between;
-  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
-  margin: 0 -10px;
-  padding: 5px 10px;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
+  border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  margin: 0 -10px; padding: 5px 10px; font-size: 12px; font-variant-numeric: tabular-nums;
 }
-.card .icone-estado { position: absolute; top: 8px; left: 8px; width: 16px; height: 16px; }
-.card .info {
-  position: absolute; top: 6px; right: 6px;
-  width: 22px; height: 22px; border-radius: 50%;
-  border: 1px solid currentColor;
-  background: transparent;
-  font-size: 12px; font-weight: 600; line-height: 1;
-  cursor: pointer; opacity: .55;
+.card .icone-estado { position: absolute; top: 7px; left: 7px; width: 16px; height: 16px; }
+.card .info, .card .remover {
+  position: absolute; top: 5px; width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid currentColor; background: transparent;
+  font-size: 12px; font-weight: 700; line-height: 1; cursor: pointer; opacity: .6;
   display: grid; place-items: center;
 }
-.card .info:hover { opacity: 1; }
+.card .info { right: 5px; }
+.card .remover { left: 5px; font-size: 14px; }
+.card .info:hover, .card .remover:hover { opacity: 1; }
+.card[data-slot] .icone-estado { display: none; }
+.st-feita .visto { stroke: var(--n); }
 
-.card.st-feita { background: var(--ok-bg); border-color: var(--ok-line); }
-.card.st-feita .icone-estado { color: var(--ok); }
-.card.st-disponivel { background: var(--avail-bg); border-color: var(--avail-line); box-shadow: var(--shadow); }
+.card.st-disponivel { box-shadow: var(--shadow); }
+.card.st-disponivel .icone-estado { color: var(--n); }
 .card.st-disponivel:hover { transform: translateY(-2px); }
-.card.st-bloqueada { background: var(--lock-bg); color: var(--lock-ink); border-style: dashed; }
-.card.st-bloqueada .eyebrow { color: var(--lock-ink); }
+.card.st-feita { background: var(--n); color: var(--n-texto); border-color: var(--n); }
+.card.st-bloqueada {
+  background: var(--bloq-bg); color: var(--bloq-ink);
+  border: 1px dashed var(--bloq-linha);
+  border-top: var(--faixa-nucleo) solid color-mix(in srgb, var(--n) 30%, var(--bloq-bg));
+}
 
-.card.rel-pre { outline: 3px solid var(--rel-pre); outline-offset: 1px; }
-.card.rel-pos { outline: 3px solid var(--rel-pos); outline-offset: 1px; }
+/* Destaque de relações ao passar o mouse */
+.rel-pre, .rel-pos { z-index: 1; }
+.card.rel-pre { outline: 3px solid var(--ink); outline-offset: 2px; }
+.card.rel-pos { outline: 3px dashed var(--ink); outline-offset: 2px; }
+.card.rel-pre::after, .card.rel-pos::after {
+  position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 999px; white-space: nowrap;
+}
+.card.rel-pre::after { content: "pré-requisito"; background: var(--ink); color: #fff; }
+.card.rel-pos::after { content: "libera"; background: #fff; color: var(--ink); border: 2px dashed var(--ink); }
 .card.pisca { animation: pisca .45s ease-in-out 3; }
-@keyframes pisca { 50% { outline: 3px solid var(--rel-pre); outline-offset: 3px; } }
+@keyframes pisca { 50% { outline: 4px solid var(--ink); outline-offset: 4px; } }
 
 /* Vagas de optativa */
 .slot {
-  min-height: 108px;
-  border-radius: var(--radius);
-  border: 2px dashed var(--avail-line);
-  background: color-mix(in srgb, var(--avail-bg) 45%, transparent);
-  display: grid;
-  place-content: center;
-  gap: 4px;
-  text-align: center;
-  padding: 10px;
-  cursor: pointer;
-  transition: background .15s, border-color .15s, transform .15s;
+  min-height: 112px; border-radius: var(--radius);
+  border: 2px dashed color-mix(in srgb, var(--n) 75%, #8a6d00);
+  background: color-mix(in srgb, var(--n) 14%, var(--surface));
+  display: grid; place-content: center; gap: 4px; text-align: center;
+  padding: 10px; cursor: pointer; transition: background .15s, border-color .15s, transform .15s;
 }
 .slot .slot-rotulo { font: 700 14px var(--font-display); }
 .slot .slot-dica { font-size: 11.5px; color: var(--muted); }
-.slot:hover { border-color: var(--accent); }
-body.arrastando .slot.vazio, body.arrastando .card[data-slot] { border-color: var(--accent); }
-.slot.sobre, .card.sobre { background: color-mix(in srgb, var(--accent) 18%, var(--surface)); transform: scale(1.03); border-style: solid; }
-.card[data-slot] .icone-estado { display: none; }
-.card[data-slot] .remover {
-  position: absolute; top: 6px; left: 6px;
-  width: 22px; height: 22px; border-radius: 50%;
-  border: 1px solid currentColor; background: transparent;
-  cursor: pointer; opacity: .55; font-size: 14px; line-height: 1;
-  display: grid; place-items: center;
+.slot:hover { border-color: var(--uece-verde); }
+body.arrastando .slot.vazio { border-color: var(--uece-verde); }
+.slot.sobre, .card.sobre {
+  background: color-mix(in srgb, var(--uece-verde) 18%, var(--surface));
+  border-color: var(--uece-verde); border-style: solid; transform: scale(1.03);
 }
-.card[data-slot] .remover:hover { opacity: 1; color: #c0392b; }
 
 /* Banco de optativas */
 .banco {
-  position: sticky;
-  top: 12px;
-  max-height: calc(100vh - 24px);
-  display: grid;
-  grid-template-rows: auto auto 1fr;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  overflow: hidden;
+  position: sticky; top: 12px; margin-top: 12px; max-height: calc(100vh - 24px);
+  display: grid; grid-template-rows: auto auto 1fr;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
 }
-.banco.sobre { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
-.banco-topo { padding: 14px 14px 10px; display: grid; gap: 8px; border-bottom: 1px solid var(--line); }
-.banco-topo h2 { font: 700 17px var(--font-display); margin: 0; }
+.banco.sobre { border-color: var(--uece-verde); box-shadow: 0 0 0 3px color-mix(in srgb, var(--uece-verde) 30%, transparent); }
+.banco-topo { padding: 14px 14px 10px; display: grid; gap: 8px; border-bottom: 1px solid var(--line); border-top: var(--faixa-nucleo) solid var(--n); }
+.banco-topo h2 { font: 700 17px var(--font-display); margin: 0; color: var(--uece-verde-profundo); }
 .banco-topo p { margin: 0; font-size: 12.5px; color: var(--muted); }
 .campo {
-  width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 7px 10px;
-  background: var(--bg);
-  color: var(--ink);
-  font: inherit;
-  font-size: 14px;
+  width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px;
+  background: var(--bg); color: var(--ink); font: inherit; font-size: 14px;
 }
+.campo:focus { border-color: var(--uece-verde); outline: none; }
 .filtros { display: flex; gap: 4px; padding: 8px 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-.filtro {
-  border: 1px solid var(--line); background: transparent; border-radius: 999px;
-  padding: 2px 10px; font-size: 12.5px; cursor: pointer;
-}
-.filtro[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.banco-lista { overflow-y: auto; padding: 6px 14px 14px; display: grid; gap: 4px; align-content: start; }
-.grupo-titulo { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; margin: 10px 0 2px; }
+.filtro { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 2px 10px; font-size: 12.5px; cursor: pointer; }
+.filtro[aria-pressed="true"] { background: var(--uece-verde); color: #fff; border-color: var(--uece-verde); }
+.banco-lista { overflow-y: auto; padding: 6px 14px 14px; display: grid; gap: 5px; align-content: start; }
+.grupo-titulo { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; margin: 10px 0 2px; }
 .opt {
-  display: grid;
-  grid-template-columns: 18px 1fr auto;
-  gap: 8px;
-  align-items: center;
-  padding: 7px 9px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  font-size: 13px;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-  background: var(--surface);
+  display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: center;
+  padding: 7px 9px; border-radius: 6px; font-size: 13px; text-align: left;
+  border: 1px solid var(--line); border-left: 5px solid var(--n);
+  cursor: pointer; background: var(--surface);
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
 }
 .opt .meta { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.opt .falta { grid-column: 2 / -1; font-size: 11.5px; color: var(--lock-ink); }
-.opt.st-disponivel { background: var(--avail-bg); border-color: var(--avail-line); cursor: grab; }
-.opt.st-disponivel:hover { border-color: var(--accent); }
-.opt.st-bloqueada { color: var(--lock-ink); background: var(--lock-bg); border-style: dashed; }
-.opt.st-feita { background: var(--ok-bg); border-color: var(--ok-line); }
-.opt.st-feita .icone { color: var(--ok); }
-.opt.rel-pre { outline: 2px solid var(--rel-pre); }
-.opt.rel-pos { outline: 2px solid var(--rel-pos); }
+.opt .falta { grid-column: 2 / -1; font-size: 11.5px; }
+.opt.st-disponivel { cursor: grab; box-shadow: 0 1px 2px rgba(31, 42, 46, .08); }
+.opt.st-disponivel .icone { color: color-mix(in srgb, var(--n) 70%, #6b5500); }
+.opt.st-disponivel:hover { border-color: var(--uece-verde); border-left-color: var(--n); }
+.opt.st-bloqueada { color: var(--bloq-ink); background: var(--bloq-bg); border-style: dashed; border-left: 5px solid var(--bloq-linha); }
+.opt.st-feita { background: var(--n); color: var(--n-texto); border-color: var(--n); }
+.opt.st-feita .meta { color: var(--n-texto); opacity: .8; }
+.opt.rel-pre { outline: 2px solid var(--ink); }
+.opt.rel-pos { outline: 2px dashed var(--ink); }
 .vazio-msg { color: var(--muted); font-size: 13px; padding: 12px 0; }
 
 /* Fantasma durante o arraste */
 .fantasma {
-  position: fixed;
-  pointer-events: none;
-  z-index: 50;
+  position: fixed; pointer-events: none; z-index: 50;
   transform: translate(-50%, -60%) rotate(-2deg);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
-  opacity: .95;
-  max-width: 260px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .25); opacity: .95; max-width: 260px;
 }
 body.arrastando, body.arrastando * { cursor: grabbing !important; }
 
-.nota {
-  padding: 0 clamp(16px, 3vw, 32px) 28px;
-  color: var(--muted);
-  font-size: 12.5px;
-  max-width: 900px;
-}
-.nota p { margin: 4px 0; }
+/* Rodapé */
+.rodape-site { background: var(--uece-grafite); color: #e9eeec; padding: 20px clamp(16px, 3vw, 32px) 26px; font-size: 13px; }
+.rodape-site .conteudo { max-width: 900px; display: grid; gap: 6px; }
+.rodape-site strong { color: #fff; }
+.rodape-site p { margin: 0; }
 
 /* Modal */
-.veu {
-  position: fixed; inset: 0; z-index: 40;
-  background: rgba(10, 16, 26, .45);
-  display: grid; place-items: center;
-  padding: 16px;
-}
+.veu { position: fixed; inset: 0; z-index: 40; background: rgba(10, 20, 15, .45); display: grid; place-items: center; padding: 16px; }
 .veu[hidden] { display: none; }
 .modal {
-  background: var(--surface);
-  border-radius: 14px;
-  width: min(520px, 100%);
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
-  padding: 20px 22px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
-  display: grid;
-  gap: 12px;
+  background: var(--surface); border-radius: 12px; width: min(520px, 100%);
+  max-height: calc(100vh - 32px); overflow-y: auto; padding: 20px 22px;
+  border-top: var(--faixa-nucleo) solid var(--n, var(--uece-verde));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .3); display: grid; gap: 12px;
 }
 .modal h3 { font: 700 20px/1.2 var(--font-display); margin: 0; text-wrap: balance; padding-right: 28px; }
 .modal .sub { color: var(--muted); font-size: 13px; margin: -6px 0 0; }
 .modal dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0; font-size: 14px; }
 .modal dt { color: var(--muted); }
 .modal dd { margin: 0; }
-.modal .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .chip { font-size: 12.5px; border-radius: 999px; padding: 2px 9px; border: 1px solid var(--line); }
-.chip.feita { background: var(--ok-bg); border-color: var(--ok-line); }
-.chip.pendente { background: var(--lock-bg); }
-.modal .botoes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.chip.feita { background: color-mix(in srgb, var(--uece-verde) 15%, #fff); border-color: var(--uece-verde-claro); }
+.chip.pendente { background: var(--bloq-bg); }
+.nucleo-tag { display: inline-flex; align-items: center; gap: 6px; }
+.botoes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .modal-cab { position: relative; }
 .modal-cab .x { position: absolute; top: -4px; right: -6px; border: none; background: transparent; font-size: 22px; cursor: pointer; color: var(--muted); }
 .lista-escolha { display: grid; gap: 4px; max-height: 50vh; overflow-y: auto; }
 
 /* Avisos */
 .avisos { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 60; display: grid; gap: 8px; width: min(460px, calc(100% - 32px)); }
-.aviso {
-  background: var(--ink); color: var(--bg);
-  padding: 10px 14px; border-radius: 10px;
-  font-size: 14px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
-}
+.aviso { background: var(--uece-verde-profundo); color: #fff; padding: 10px 14px; border-radius: 8px; font-size: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
 
 @media (max-width: 900px) {
   .principal { grid-template-columns: 1fr; }
   .banco { position: static; max-height: 70vh; }
+  .legenda-grupo > strong { min-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -398,25 +285,27 @@ body.arrastando, body.arrastando * { cursor: grabbing !important; }
 </head>
 <body>
 
-<header class="topo">
-  <div class="titulo-linha">
-    <div>
-      <h1>Grade Curricular de Sistemas de Informação</h1>
-      <p>UECE / FECLI, Campus Avançado de Mombaça. Matriz do PPC versão 2 (currículo 2026). Clique nas disciplinas que você já cursou.</p>
-    </div>
-    <div class="acoes-topo">
-      <button class="btn btn-perigo" type="button" data-acao="resetar">Limpar progresso</button>
-    </div>
+<header class="faixa">
+  <div>
+    <h1>Grade Curricular de Sistemas de Informação</h1>
+    <p>Clique nas disciplinas que você já cursou.</p>
   </div>
-  <div class="resumo" id="resumo"></div>
-  <div class="legenda">
-    <span><i class="amostra feita"></i>Concluída</span>
-    <span><i class="amostra disponivel"></i>Liberada para cursar</span>
-    <span><i class="amostra bloqueada"></i>Bloqueada por pré-requisito</span>
-    <span><i class="amostra pre"></i>Pré-requisito (ao passar o mouse)</span>
-    <span><i class="amostra pos"></i>Disciplinas que ela libera</span>
-  </div>
+  <button class="btn btn-claro" type="button" data-acao="resetar">Limpar progresso</button>
 </header>
+
+<section class="painel">
+  <div class="resumo" id="resumo"></div>
+  <div class="legenda" aria-label="Legenda">
+    <div class="legenda-grupo" id="legendaNucleos"><strong>Núcleos de formação</strong></div>
+    <div class="legenda-grupo">
+      <strong>Situação</strong>
+      <span class="legenda-item"><i class="mini feita"></i>Concluída (cartão preenchido)</span>
+      <span class="legenda-item"><i class="mini disponivel"></i>Liberada para cursar</span>
+      <span class="legenda-item"><i class="mini bloqueada"></i>Bloqueada por pré-requisito</span>
+      <span class="legenda-item"><span class="selo-rel selo-pre">pré-requisito</span><span class="selo-rel selo-pos">libera</span>aparecem ao passar o mouse</span>
+    </div>
+  </div>
+</section>
 
 <main class="principal">
   <div class="grade-scroll" id="gradeScroll">
@@ -440,7 +329,7 @@ body.arrastando, body.arrastando * { cursor: grabbing !important; }
   </aside>
 </main>
 
-<footer class="nota" id="nota"></footer>
+<footer class="rodape-site"><div class="conteudo" id="nota"></div></footer>
 
 <div class="veu" id="veu" hidden>
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo"></div>
@@ -450,14 +339,15 @@ body.arrastando, body.arrastando * { cursor: grabbing !important; }
 <script>
 "use strict";
 
-/* ===================== Parâmetros do curso (PPC v2) ===================== */
+/* ===================== Parâmetros do curso (PPC 2026.2) ===================== */
+const VERSAO_PPC = "2026.2";
 const HORAS_POR_CREDITO = 17;
 const TOTAL_PERIODOS = 8;
 const CREDITOS_OPTATIVAS_EXIGIDOS = 40;
 const CREDITOS_VAGA_PADRAO = 4;
 const HORAS_ATIVIDADES_COMPLEMENTARES = 119;
 const HORAS_EXTENSAO_ESPECIFICA = 153;
-const VAGAS_OPTATIVAS_POR_PERIODO = { 6: 3, 7: 4, 8: 3 };
+const VAGAS_OPTATIVAS_POR_PERIODO = { 6: 2, 7: 4, 8: 4 };
 
 /* Parâmetros de interface */
 const ARRASTO_LIMIAR_PX = 6;
@@ -466,7 +356,7 @@ const AUTOROLAGEM_MARGEM_PX = 60;
 const AUTOROLAGEM_PASSO_PX = 14;
 const AVISO_DURACAO_MS = 4500;
 const PISCA_DURACAO_MS = 1500;
-const CHAVE_ARMAZENAMENTO = "grade-si-uece-mombaca-v1";
+const CHAVE_ARMAZENAMENTO = "grade-si-uece-mombaca-v2";
 
 /* ===================== Disciplinas obrigatórias ===================== */
 /* cr = créditos totais; ext = créditos de extensão incluídos em cr; pre = pré-requisitos; co = correquisitos */
@@ -572,6 +462,29 @@ const OPTATIVAS = [
   { id: "mobi4",   area: "Mobilidade acadêmica", nome: "Estudos de Mobilidade Internacional IV", cr: 6, pre: [] },
 ];
 
+/* ===================== Núcleos de formação (Quadro 4 do PPC) ===================== */
+/* cor = cor do núcleo; texto = cor do texto sobre o cartão preenchido */
+const NUCLEOS = {
+  cc:   { nome: "Formação básica em Ciência da Computação", cor: "#1d64a8", texto: "#ffffff" },
+  mat:  { nome: "Formação básica em Matemática", cor: "#6d47a8", texto: "#ffffff" },
+  si:   { nome: "Formação básica em Sistemas de Informação", cor: "#0a7f86", texto: "#ffffff" },
+  tec:  { nome: "Formação tecnológica", cor: "#008442", texto: "#ffffff" },
+  comp: { nome: "Formação complementar", cor: "#c9631a", texto: "#ffffff" },
+  hum:  { nome: "Formação humanística", cor: "#b8323a", texto: "#ffffff" },
+  sup:  { nome: "Formação suplementar (estágio, TCC e pesquisa)", cor: "#485156", texto: "#ffffff" },
+  div:  { nome: "Formação diversificada (optativas)", cor: "#f2c230", texto: "#2e2600" },
+};
+const NUCLEO_OPTATIVAS = "div";
+const COMPOSICAO_NUCLEOS = {
+  cc:   ["fprog", "arq", "poo", "ed"],
+  mat:  ["precalc", "matbas", "mdisc", "calc1", "probest", "logica"],
+  si:   ["isi", "si"],
+  tec:  ["fbd", "so", "aps", "redes", "gic", "reqs", "es", "aud", "web", "gti", "ihc", "gps"],
+  comp: ["iadm", "gpn", "empre"],
+  hum:  ["edl"],
+  sup:  ["est1", "ppct", "tcc1", "est2", "tcc2"],
+};
+
 /* ===================== Estruturas derivadas ===================== */
 const ROMANOS = [["X", 10], ["IX", 9], ["V", 5], ["IV", 4], ["I", 1]];
 function romano(n) {
@@ -590,8 +503,10 @@ for (let p = 1; p <= TOTAL_PERIODOS; p++) {
 }
 
 const TODAS = [...OBRIGATORIAS.map(d => ({ ...d, tipo: "obrigatoria" })), ...OPTATIVAS.map(d => ({ ...d, ext: 0, tipo: "optativa" }))];
-TODAS.forEach(d => { d.pre = d.pre || []; d.co = d.co || []; });
+TODAS.forEach(d => { d.pre = d.pre || []; d.co = d.co || []; d.nucleo = d.tipo === "optativa" ? NUCLEO_OPTATIVAS : null; });
 const POR_ID = Object.fromEntries(TODAS.map(d => [d.id, d]));
+Object.entries(COMPOSICAO_NUCLEOS).forEach(([nucleo, ids]) => ids.forEach(id => { POR_ID[id].nucleo = nucleo; }));
+const corNucleo = nucleo => ' style="--n:' + NUCLEOS[nucleo].cor + ';--n-texto:' + NUCLEOS[nucleo].texto + '"';
 const LIBERA = Object.fromEntries(TODAS.map(d => [d.id, []]));
 TODAS.forEach(d => [...d.pre, ...d.co].forEach(p => LIBERA[p].push(d.id)));
 
@@ -736,7 +651,7 @@ function marcarPeriodo(p) {
 
 /* ===================== Renderização ===================== */
 const ICONES = {
-  feita: '<svg class="icone-estado icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M4.5 8.2l2.3 2.3 4.7-4.9" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  feita: '<svg class="icone-estado icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path class="visto" d="M4.5 8.2l2.3 2.3 4.7-4.9" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   disponivel: '<svg class="icone-estado icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/></svg>',
   bloqueada: '<svg class="icone-estado icone" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="7" rx="1.5" fill="currentColor"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>',
 };
@@ -744,7 +659,7 @@ const ROTULO_STATUS = { feita: "concluída", disponivel: "liberada", bloqueada: 
 
 function cartaoObrigatoria(d) {
   const st = status(d);
-  return '<div class="card st-' + st + '" data-id="' + d.id + '" data-acao="alternar" role="button" tabindex="0" aria-pressed="' + (st === "feita") + '" aria-label="' + esc(d.nome) + ", " + ROTULO_STATUS[st] + '">' +
+  return '<div class="card st-' + st + '"' + corNucleo(d.nucleo) + ' data-id="' + d.id + '" data-acao="alternar" role="button" tabindex="0" aria-pressed="' + (st === "feita") + '" aria-label="' + esc(d.nome) + ", " + ROTULO_STATUS[st] + '">' +
     ICONES[st] +
     '<button type="button" class="info" data-acao="info" data-alvo="' + d.id + '" aria-label="Detalhes de ' + esc(d.nome) + '">i</button>' +
     '<span class="eyebrow"></span>' +
@@ -756,13 +671,13 @@ function cartaoObrigatoria(d) {
 function cartaoVaga(v) {
   const optId = estado.vagas[v.id];
   if (!optId) {
-    return '<div class="slot vazio" data-slot="' + v.id + '" data-acao="escolher" role="button" tabindex="0" aria-label="' + v.rotulo + ', vaga livre. Escolher optativa">' +
+    return '<div class="slot vazio"' + corNucleo(NUCLEO_OPTATIVAS) + ' data-slot="' + v.id + '" data-acao="escolher" role="button" tabindex="0" aria-label="' + v.rotulo + ', vaga livre. Escolher optativa">' +
       '<span class="slot-rotulo">' + v.rotulo + '</span>' +
       '<span class="slot-dica">Arraste uma optativa ou clique para escolher</span>' +
       '<span class="slot-dica">' + horas(CREDITOS_VAGA_PADRAO) + ' horas</span></div>';
   }
   const d = POR_ID[optId];
-  return '<div class="card st-feita" data-id="' + d.id + '" data-slot="' + v.id + '" data-arrasta="' + d.id + '" data-acao="info" data-alvo="' + d.id + '" role="button" tabindex="0" aria-label="' + v.rotulo + ': ' + esc(d.nome) + '">' +
+  return '<div class="card st-feita"' + corNucleo(d.nucleo) + ' data-id="' + d.id + '" data-slot="' + v.id + '" data-arrasta="' + d.id + '" data-acao="info" data-alvo="' + d.id + '" role="button" tabindex="0" aria-label="' + v.rotulo + ': ' + esc(d.nome) + '">' +
     ICONES.feita +
     '<button type="button" class="info" data-acao="info" data-alvo="' + d.id + '" aria-label="Detalhes de ' + esc(d.nome) + '">i</button>' +
     '<span class="eyebrow">' + v.rotulo + '</span>' +
@@ -794,7 +709,7 @@ function itemOptativa(d) {
   const meta = st === "feita" ? VAGAS.find(v => v.id === vaga).rotulo : horas(d.cr) + " h";
   const falta = st === "bloqueada" ? '<span class="falta">Requer: ' + faltando(d).map(x => esc(POR_ID[x].nome)).join(", ") + '</span>' : "";
   const arrastavel = st !== "bloqueada" ? ' data-arrasta="' + d.id + '"' : "";
-  return '<div class="opt st-' + st + '" data-id="' + d.id + '"' + arrastavel + ' data-acao="info" data-alvo="' + d.id + '" role="button" tabindex="0" aria-label="' + esc(d.nome) + ", " + ROTULO_STATUS[st] + '">' +
+  return '<div class="opt st-' + st + '"' + corNucleo(d.nucleo) + ' data-id="' + d.id + '"' + arrastavel + ' data-acao="info" data-alvo="' + d.id + '" role="button" tabindex="0" aria-label="' + esc(d.nome) + ", " + ROTULO_STATUS[st] + '">' +
     ICONES[st].replace("icone-estado ", "") +
     '<span>' + esc(d.nome) + '</span><span class="meta">' + meta + '</span>' + falta + '</div>';
 }
@@ -834,11 +749,12 @@ function renderResumo() {
     tile("Carga horária em disciplinas", fmt(hFeitas), "de " + fmt(HORAS_DISCIPLINAS), " h", hFeitas / HORAS_DISCIPLINAS) +
     '<div class="tile"><span class="tile-rotulo">Obrigatórias liberadas agora</span><span class="tile-valor">' + liberadas +
     ' <small>' + (liberadas === 1 ? "disciplina" : "disciplinas") + '</small></span>' +
-    '<span class="tile-rotulo">Em amarelo na grade</span></div>';
+    '<span class="tile-rotulo">Cartões brancos com sombra na grade</span></div>';
 }
 
 function renderNota() {
   document.getElementById("nota").innerHTML =
+    '<p><strong>Bacharelado em Sistemas de Informação, UECE / FECLI, Campus Avançado de Mombaça.</strong> Matriz curricular conforme o Projeto Pedagógico do Curso, versão ' + VERSAO_PPC + '.</p>' +
     '<p>Carga horária total do curso: ' + fmt(HORAS_TOTAIS_CURSO) + ' h, sendo ' + fmt(HORAS_DISCIPLINAS) + ' h em disciplinas (' + CREDITOS_OBRIGATORIOS + ' créditos obrigatórios e ' + CREDITOS_OPTATIVAS_EXIGIDOS + ' em optativas), ' +
     HORAS_ATIVIDADES_COMPLEMENTARES + ' h de Atividades Complementares e ' + HORAS_EXTENSAO_ESPECIFICA + ' h de Atividades Específicas de Extensão. Cada crédito equivale a ' + HORAS_POR_CREDITO + ' horas.</p>' +
     '<p>Trabalho de Conclusão de Curso I tem Projeto de Pesquisa Científica e Tecnológica como correquisito: ela é liberada assim que as duas puderem ser cursadas juntas. Seu progresso fica salvo apenas neste navegador.</p>';
@@ -855,8 +771,9 @@ const veu = document.getElementById("veu");
 const modal = document.getElementById("modal");
 let focoAnterior = null;
 
-function abrirModal(html) {
+function abrirModal(html, nucleo) {
   focoAnterior = document.activeElement;
+  modal.style.setProperty("--n", nucleo ? NUCLEOS[nucleo].cor : "");
   modal.innerHTML = html;
   veu.hidden = false;
   const alvo = modal.querySelector("[autofocus], input, button.btn-primario, button");
@@ -897,12 +814,13 @@ function abrirInfo(id) {
     }
   }
   abrirModal(cabecalhoModal(d.nome, sub) +
-    '<dl><dt>Carga horária</dt><dd>' + horas(d.cr) + ' horas</dd>' +
+    '<dl><dt>Núcleo</dt><dd><span class="nucleo-tag"><i class="amostra"' + corNucleo(d.nucleo) + '></i>' + NUCLEOS[d.nucleo].nome + '</span></dd>' +
+    '<dt>Carga horária</dt><dd>' + horas(d.cr) + ' horas</dd>' +
     '<dt>Créditos</dt><dd>' + cr + '</dd>' +
     '<dt>Pré-requisitos</dt><dd>' + chips(d.pre) + '</dd>' +
     (d.co.length ? '<dt>Correquisito</dt><dd>' + chips(d.co) + '</dd>' : "") +
     '<dt>Libera</dt><dd>' + chips(LIBERA[id]) + '</dd></dl>' +
-    '<div class="botoes">' + botoes + '<button type="button" class="btn" data-acao="fechar">Fechar</button></div>');
+    '<div class="botoes">' + botoes + '<button type="button" class="btn" data-acao="fechar">Fechar</button></div>', d.nucleo);
 }
 
 function abrirEscolha(vagaId) {
@@ -912,7 +830,7 @@ function abrirEscolha(vagaId) {
   abrirModal(cabecalhoModal("Escolher " + vaga.rotulo, "Optativas liberadas que ainda não estão na grade.") +
     '<label class="tile-rotulo" for="buscaEscolha">Buscar</label><input id="buscaEscolha" class="campo" type="search" autocomplete="off" autofocus>' +
     '<div class="lista-escolha" id="listaEscolha">' +
-    disponiveis.map(d => '<button type="button" class="opt st-disponivel" data-acao="colocar" data-alvo="' + d.id + '" data-vaga="' + vagaId + '" data-nome="' + esc(normalizar(d.nome)) + '">' +
+    disponiveis.map(d => '<button type="button" class="opt st-disponivel"' + corNucleo(d.nucleo) + ' data-acao="colocar" data-alvo="' + d.id + '" data-vaga="' + vagaId + '" data-nome="' + esc(normalizar(d.nome)) + '">' +
       ICONES.disponivel.replace("icone-estado ", "") + '<span>' + esc(d.nome) + '</span><span class="meta">' + horas(d.cr) + ' h</span></button>').join("") +
     '</div>' +
     (bloqueadas ? '<p class="sub">' + bloqueadas + ' optativas ainda dependem de pré-requisitos e não aparecem aqui.</p>' : "") +
@@ -1117,6 +1035,9 @@ document.addEventListener("touchmove", e => { if (arrasto && arrasto.ativo) e.pr
 document.addEventListener("contextmenu", e => { if (arrasto) e.preventDefault(); });
 
 /* ===================== Início ===================== */
+document.getElementById("legendaNucleos").insertAdjacentHTML("beforeend",
+  Object.keys(NUCLEOS).map(k => '<span class="legenda-item"><i class="amostra"' + corNucleo(k) + '></i>' + NUCLEOS[k].nome + '</span>').join(""));
+document.getElementById("banco").style.setProperty("--n", NUCLEOS[NUCLEO_OPTATIVAS].cor);
 carregar();
 renderNota();
 renderizar();
